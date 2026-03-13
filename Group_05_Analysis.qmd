@@ -13,7 +13,26 @@ execute:
 ---
 
 # Introduction
+### Year vs prevalence
 
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+library(ggplot2)
+library(dplyr)
+library(kableExtra)
+library(sjPlot)
+library(performance)
+library(DHARMa)
+obesity<-read.csv("DAProject5.csv")
+obesity$Year<-as.factor((obesity$Year))
+obesity$Obese<-as.factor((obesity$Obese))
+obesity$Education<-as.factor((obesity$Education))
+obesity$Veg<-as.factor((obesity$Veg))
+obesity$Fruit<-as.factor((obesity$Fruit))
+obesity$Sex<-as.factor(obesity$Sex)
+```
 
 # Explanatory Data Analysis
 
