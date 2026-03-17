@@ -1,7 +1,7 @@
 # Obesity Prediction (Group 5)
 
 ## Overview
-Obestiy Prediction using visualisation, testing, and applied modelling .
+Obestiy Prediction using visualisation, testing, and applied modelling.
 
 ## Dataset
 2013–2016 Scottish Health Survey dataset - `DAProject5.csv`
