@@ -1,7 +1,7 @@
 ---
 title: "Group_05_Analysis"
-author: "Group 5"
-date: "06/03/2025"
+author: "*Group 5: Chloe Au Yeung, Xinyan Tian, Cameron Fraser, and Sarah Khan*"
+date: "03/16/2026"
 format:
   html:
     toc: true
@@ -12,19 +12,65 @@ execute:
   echo: false
 ---
 
-# Introduction
+-   [Introduction](#sec-intro)
+-   [Explanatory Data Analysis](#sec-explanatory-data-analysis)
+    -   [Data Overview](#sub-sec-data-overview)
+    -   [Visualisations](#sub-sec-visualisations)
+-   [Formal Data Analysis](#sec-formal-data-analysis)
+    -   [Model Specification](#sub-sec-model-specification)
+    -   [Results](#sub-sec-results)
+-   [Discussion](#sec-discussion)
+-   [Conclusion](#sec-conclusion)
+-   [References](#sec-references)
+-   [Appendix](#sec-appendix)
+    -   [R Studio Languages](#sub-sec-language)
 
+# Introduction {#sec-intro}
 
-# Explanatory Data Analysis
+In this report, we will begin using logarithmic regression to model outcomes of interest that take one of two categorical values. Then, we will use model diagnotics to assess if this model is the most fitting and reliable. Then we will look at the `DAProject.csv` data set which contains the socio-economic and lifestyle factors from the 2013 - 2016 Scottish Health Surveys.
 
+# Explanatory Data Analysis {#sec-explanatory-data-analysis}
 
-# Formal Data Analysis
+## Data Overview {#sec-data-overview}
 
+In this report, we will use the data stored in `DAProject5.csv` which has 7 variables. The data comes from a Scottish Health Surveys study from the 2013 - 2016 Scottish Health Surveys on 14,018 individuals to study socio-economic and lifestyle factors. `DAPprojects.csv` contains the following columns:
 
-# Conclusion
+-   `Age` - Age of individual
 
+-   `Sex` - Sex of individual (Male / Female)
 
-# References
+-   `Education` - Highest educational qualification of individual
 
+-   `Veg` - Consume recommended daily vegetable intake (Yes / No)
 
-# R Studio Language
+-   `Fruit` - Consume recommended daily fruit intake (Yes / No)
+
+-   `Year` - Year of the Scottish Health Survey
+
+-   `Obese` - Indicator of individuals obesity classification (Yes / No)
+
+Since this dataset contains a binary categorical variable `Obese` - classified as Yes/No - logistic regression may be considered as an appropriate modeling approach. We aim to create a predicative model that can determine the probability of an individual being classified as obese using variables `Age`, `Sex`, `Education`, `Veg`, and `Fruit`. Furthermore, we will assess if obesity has increased or decreased across the given years (2013-2016).
+
+The main questions of interest are:
+
+-   Has the prevalence of obesity in Scotland changed over the given years of the Scottish Health Survey?
+
+-   Are there any differences in obesity by age, gender, socio-economic status or lifestyle factors?
+
+## Visualisations {#sec-visualisations}
+
+# Formal Data Analysis {#sec-formal-data-analysis}
+
+## Model Specification {#sub-sec-model-specification}
+
+## Results {#sub-sec-results}
+
+# Discussion {#sec-discussion}
+
+# Conclusion {#sec-conclusion}
+
+# References {#sec-references}
+
+# Appendix {#sec-appendix}
+
+## R Studio Language {#sub-sec-language}
