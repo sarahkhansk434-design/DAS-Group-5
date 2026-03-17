@@ -2,6 +2,9 @@
 title: "final plot"
 format: html
 editor: visual
+echo: false
+message: false
+warning: false
 ---
 
 ## Introduction
