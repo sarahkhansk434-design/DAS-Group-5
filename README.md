@@ -2,7 +2,7 @@
 
 # Obesity Prediction (Group 5)
 
-## Overview
+## Overview
 Obestiy Prediction using visualisation, testing, and modelling applied.
 
 ## Dataset
@@ -19,6 +19,6 @@ Obestiy Prediction using visualisation, testing, and modelling applied.
 2. Statistical Inference
 3. Model Diagnostics
 
-## Tools Used
+## Tools Used
 - R Studio
 - Quarto
