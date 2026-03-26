@@ -4,7 +4,7 @@
 Obestiy Prediction using visualisation, testing, and applied modelling.
 
 ## Dataset
-2013 – 2016 Scottish Health Survey dataset - `DAProject5.csv`
+The socio-economic and lifestyle factors from the 2013 – 2016 Scottish Health Survey dataset - `DAProject5.csv`
 
 The data stored in `DAProject5.csv` which has 14,018 individuals and 7 variables with the following columns:
 
