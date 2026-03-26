@@ -6,30 +6,16 @@ format:
   html:
     toc: true
     toc-depth: 2
-    toc-location: body
+    toc-location: left
+    toc-expand: true
     number-sections: false
 execute:
   echo: false
 ---
 
--   [Introduction](#sec-intro)
--   [Explanatory Data Analysis](#sec-explanatory-data-analysis)
-    -   [Data Overview](#sub-sec-data-overview)
-    -   [Visualisations](#sub-sec-visualisations)
--   [Formal Data Analysis](#sec-formal-data-analysis)
-    -   [Model Specification](#sub-sec-model-specification)
-    -   [Results](#sub-sec-results)
--   [Discussion](#sec-discussion)
--   [Conclusion](#sec-conclusion)
--   [References](#sec-references)
--   [Appendix](#sec-appendix)
-    -   [R Studio Languages](#sub-sec-language)
-
 # Introduction {#sec-intro}
 
 In this report, we will begin using logarithmic regression to model outcomes of interest that take one of two categorical values. Then, we will use model diagnotics to assess if this model is the most fitting and reliable. Then we will look at the `DAProject.csv` data set which contains the socio-economic and lifestyle factors from the 2013 - 2016 Scottish Health Surveys.
-
-# Explanatory Data Analysis {#sec-explanatory-data-analysis}
 
 ## Data Overview {#sec-data-overview}
 
@@ -49,7 +35,7 @@ In this report, we will use the data stored in `DAProject5.csv` which has 7 vari
 
 -   `Obese` - Indicator of individuals obesity classification (Yes / No)
 
-Since this dataset contains a binary categorical variable `Obese` - classified as Yes/No - logistic regression may be considered as an appropriate modeling approach. We aim to create a predicative model that can determine the probability of an individual being classified as obese using variables `Age`, `Sex`, `Education`, `Veg`, and `Fruit`. Furthermore, we will assess if obesity has increased or decreased across the given years (2013-2016).
+Since this dataset contains a binary categorical variable `Obese` - classified as `Yes`/`No` - logistic regression may be considered as an appropriate modelling approach. We aim to create a predicative model that can determine the probability of an individual being classified as obese using variables `Age`, `Sex`, `Education`, `Veg`, and `Fruit`. Furthermore, we will assess if obesity has increased or decreased across the given years (2013-2016).
 
 The main questions of interest are:
 
@@ -57,20 +43,522 @@ The main questions of interest are:
 
 -   Are there any differences in obesity by age, gender, socio-economic status or lifestyle factors?
 
-## Visualisations {#sec-visualisations}
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+library(ggplot2)
+library(dplyr)
+library(kableExtra)
+library(sjPlot)
+library(performance)
+library(DHARMa)
+library(patchwork)
+library(ROCR)
+library(yardstick)
+obesity<-read.csv("DAProject5.csv")
+obesity$Year<-as.factor((obesity$Year))
+obesity$Obese<-as.factor((obesity$Obese))
+obesity$Education<-as.factor((obesity$Education))
+obesity$Veg<-as.factor((obesity$Veg))
+obesity$Fruit<-as.factor((obesity$Fruit))
+obesity$Sex<-as.factor(obesity$Sex)
+```
+
+# Explanatory Data Analysis {#sec-explanatory-data-analysis}
+
+## Data Overview {#sub-sec-data-overview}
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| eval: false
+
+glimpse(obesity)
+
+```
+
+Logistic regression is used when the outcome of interest takes one of two categorical values (e.g. `Yes`/`No`). In this case, the response variable takes the value 1 (defined as success, with probability $p_i$) or 0 (defined as failure, with probability $1 - p_i$). Thus, the response $Y_i$ is assumed to follow a Bernoulli distribution, $Y_i \sim \text{Bernoulli}(p_i)$.
+
+The corresponding model uses the logit link function: $$
+g(p_i) = 
+\log\left(\frac{p_i}{1 - p_i}\right)
+= \log\left(\frac{\mathbb{P}(Y_i = 1 \mid \underline{x}_i)}{\mathbb{P}(Y_i = 0 \mid \underline{x}_i)}\right)
+= \underline{x}_i^\top \underline{\beta}
+$$ {#eq-log-odds}
+
+We can refer to @eq-log-odds as the log-odds, since $\frac{p_i}{1 - p_i}$ represents the odds. Taking the inverse of the logit link function gives the predicted probability:
+
+$$
+\mathbb{P}(Y_i = 1 \mid \underline{x}_i)
+= \frac{\exp(\underline{x}_i^\top \underline{\beta})}{1 + \exp(\underline{x}_i^\top \underline{\beta})}
+$$ {#eq-odds-1}
+
+and it follows that:
+
+$$
+\mathbb{P}(Y_i = 0 \mid \underline{x}_i)
+= \frac{1}{1 + \exp(\underline{x}_i^\top \underline{\beta})}.
+$$ {#eq-odds-0} \## Visualisations {#sub-sec-visualisations}
+
+To get an initial impression of the data set, we will look at the binary categorical variable `Obese` as our explanatory variable.
+
+### Year vs prevalence
+
+```{r}
+#| echo: false
+#| label: tbl-1
+#| tbl-cap: Prevalence of obesity over 2013-2016
+
+yearprop<-prop.table(table(obesity$Year,obesity$Obese),1)
+yearprop<-as.data.frame(yearprop)
+colnames(yearprop)<-c("Year","Obese","Prevalence")
+yearprop100<-prop.table(table(obesity$Year,obesity$Obese),1)*100
+yearprop100<-as.data.frame(yearprop100)
+colnames(yearprop100)<-c("Year","Obese","Prevalence(%)")
+yearprev<-yearprop100 %>%
+  dplyr::filter(Obese=="Yes")
+yearprev<-yearprev[,-2]
+kable(yearprev,
+      digit=3)
+
+```
+
+We can look at a bar plot of the proportion of `Obese` by `Year` to get observe the data.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false 
+#| fig-width: 4
+#| fig-height: 2
+#| label: fig-year
+#| fig-cap: Prevalence of obesity across 2013-2016
+
+ggplot(yearprop, aes(x = Year, y = Prevalence, fill = Obese)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent,
+                      limits = c(0,1)) + 
+  guides(fill = "none") +
+  labs(x="Year", y="Prevalence",
+       title="Obesity Prevalence by Year")  
+
+```
+
+We can see in @fig-year that there is an approximately consistency in proportion of individuals in the `Yes` obesity group. From @tbl-1, we investigated further if proportion of individuals in the `Yes` obesity group, which appears on average at 30.5%.
+
+Later, we will fit a logistic regression model to assess whether obesity prevalence has changed over time, by examining whether `Year` is a significant predictor of the odds of individuals in the `Yes` obesity group.
+
+### Sex vs prevalence
+
+```{r}
+#| echo: false
+#| label: tbl-sex
+#| tbl-cap: Prevalence of obesity by sex
+sexprop<-prop.table(table(obesity$Sex, obesity$Obese),1)
+sexprop<-as.data.frame(sexprop)
+colnames(sexprop)<-c("Sex","Obese","Prevalence")
+sexprop100<-prop.table(table(obesity$Sex, obesity$Obese),1)*100
+sexprop100<-as.data.frame(sexprop100)
+colnames(sexprop100)<-c("Sex","Obese","Prevalence(%)")
+
+sexprev<-sexprop100 %>%
+  dplyr::filter(Obese=="Yes")
+sexprev<-sexprev[,-2]
+kable(sexprev,
+      digit=3)
+```
+
+Here we can see the age of individuals in the `Yes` obesity group tends to be slightly higher than that of the `No` obesity group.
+
+### Age vs prevalence
+
+```{r}
+#| echo: false
+#| fig-width: 4
+#| fig-height: 2
+#| label: fig-ageboxplot
+#| fig-cap: Age Distribution by Obesity Status
+ggplot(obesity, aes(x = Obese, y = Age,fill=Obese)) +
+  geom_boxplot() +
+  labs(title="Age Distribution by Obesity Status")
+
+```
+
+### Education vs prevalence
+
+```{r}
+#| echo: false
+#| label: tbl-edu
+#| tbl-cap: Prevalence of obesity by education level
+eduprop<-prop.table(table(obesity$Education, obesity$Obese),1)
+eduprop<-as.data.frame(eduprop)
+colnames(eduprop)<-c("Education","Obese","Prevalence")
+eduprop100<-prop.table(table(obesity$Education, obesity$Obese),1)*100
+eduprop100<-as.data.frame(eduprop100)
+colnames(eduprop100)<-c("Education","Obese","Prevalence(%)")
+
+eduprev<-eduprop100 %>%
+  dplyr::filter(Obese=="Yes")
+eduprev<-eduprev[,-2]
+kable(eduprev,
+      digit=3)
+```
+
+From @tbl-edu, we can see that a larger proportion of individuals in the `Yes` obesity group are in the `No Qualifications` group (38.2%), while the `Degree of higher` group has a smaller proportion (24.7%).
+
+### Vegetable intake
+
+```{r}
+#| echo: false
+#| label: tbl-veg
+#| tbl-cap: Prevalence of obesity by Vegetable intake
+vegprop<-prop.table(table(obesity$Veg, obesity$Obese),1)
+vegprop<-as.data.frame(vegprop)
+colnames(vegprop)<-c("Vegetable_intake","Obese","Prevalence")
+vegprop100<-prop.table(table(obesity$Veg, obesity$Obese),1)*100
+vegprop100<-as.data.frame(vegprop100)
+colnames(vegprop100)<-c("Vegetable_intake","Obese","Prevalence(%)")
+
+vegprev<-vegprop100 %>%
+  dplyr::filter(Obese=="Yes")
+vegprev<-vegprev[,-2]
+kable(vegprev,
+      digit=3)
+```
+
+### Fruits vs prevalence
+
+```{r}
+#| echo: false
+#| label: tbl-fruits
+#| tbl-cap: Prevalence of obesity by Fruit intake
+frprop<-prop.table(table(obesity$Fruit, obesity$Obese),1)
+frprop<-as.data.frame(frprop)
+colnames(frprop)<-c("Fruit_intake","Obese","Prevalence")
+frprop100<-prop.table(table(obesity$Fruit, obesity$Obese),1)*100
+frprop100<-as.data.frame(frprop100)
+colnames(frprop100)<-c("Fruit_intake","Obese","Prevalence(%)")
+
+frprev<-frprop100 %>%
+  dplyr::filter(Obese=="Yes")
+frprev<-frprev[,-2]
+kable(frprev,
+      digit=3)
+```
+
+Additionally, @tbl-veg and @tbl-fruits displays similar results for nutritional consumption `Yes`/`No` with the vegetable group intake being approximately the same and the `No` fruit intake group having a larger proportion (35.6% vs 29.8%).
+
+We will extend the logistic regression model to see whether `Age`, `Sex`, `Education`, `Veg`, and `Fruit` are significant predictors of the odds of an individuals being part of the the `Yes` obesity group.
 
 # Formal Data Analysis {#sec-formal-data-analysis}
 
 ## Model Specification {#sub-sec-model-specification}
 
+$$y_i \sim \text{Bernoulli}(p_i)$$
+
+$$logit(p_i)=\beta_0+\beta_1(x)$$ {#eq-x}
+
+To fit a logistic regression model, we will conduct variable selection using backwards elimination since we only have a few parameters available. We will also use Bayesian Information Criterion (BIC) as the selection criterion to determine the best model for our dataset. The performance of the model we select will be assessed using the Receiver Operating Characteristic (ROC) Curve.
+
 ## Results {#sub-sec-results}
+
+### Year vs prevalence
+
+We fit a logistic regression model using the logit link function, with `Obese` as the response and `Year` as the explanatory variable, given by: $$\text{Obese}_i \sim \text{Bernoulli}(p_i)$$
+
+$$logit(p_i)=\alpha_0+ + \beta_1 \,\mathbb{I}_{(\text{Year}_i = 2014)}
++ \beta_2 \,\mathbb{I}_{(\text{Year}_i = 2015)}
++ \beta_3 \,\mathbb{I}_{(\text{Year}_i = 2016)}
+$$ {#eq-year}
+
+where: 2013 is the reference year. The intercept $\alpha_0$ represents the log-odds of an individual being obese in the reference year 2013, and the coefficients $\beta_1$, $\beta_2$, $\beta_3$ represent the change in log-odds in each year compared to 2013. Positive values indicate higher odds of obesity relative to 2013, while negative values indicate lower odds.
+
+where:
+
+-   $\alpha_0$ represents the log-odds of an individual being obese in the reference year 2013.
+
+-   $\beta_1$ represents the change in log-odds of being obese in 2014 compared to 2013.
+
+-   $\mathbb{I}_{(\text{Year}_i} = 2014)$ is an indicator variable that takes the value 1 if the $i$th observation is from 2014, and 0 otherwise.
+
+-   $\beta_2$ represents the change in log-odds of being obese in 2015 compared to 2013
+
+-   $\mathbb{I}_{(\text{Year}_i} = 2015)$ is an indicator variable that takes the value 1 if the $i$th observation is from 2015, and 0 otherwise.
+
+-   $\beta_3$ represents the change in log-odds of being obese in 2016 compared to 2013.
+
+-   $\mathbb{I}_{(\text{Year}_i} = 2016)$ is an indicator variable that takes the value 1 if the $i$th observation is from 2016, and 0 otherwise.
+
+```{r}
+
+#| echo: false
+#| message: false
+#| warning: false 
+#| label: tbl-yearmodel
+#| tbl-cap: Coefficient of the logistic regression model
+model_year <- glm(Obese ~ Year,
+                  data = obesity,
+                  family = binomial)
+
+tab_model(model_year,transform=NULL)
+```
+
+Since p \> 0.05, there is no significant difference in obesity prevalence between years.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false 
+p <- exp(coef(model_year))
+```
+
+We can visualise the probabilities using the plot_model() function as follows:
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false 
+#| label: fig-log-odds
+#| tbl-cap: Coefficient of the Logistic Regression Model
+plot_model(model_year, show.values = TRUE, transform = NULL,
+           title = "Log-Odds", show.p = FALSE)
+```
+
+@fig-log-odds shows the estimated log-odds coefficients for each year relative to the refernece category (2013) are all close to zero, and their confidence intervals include zero. This indicated there is miniml difference in log-odds of obesity across years and adding onto @tbl-yearmodel, since the p-values are large, this provides no evidance that year is a statistically significant predictor of obesity. coefficient compares that year with 2013 (reference level) appears to be approximately the same.
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: fig-prob-obesity
+#| tbl-cap: Prob. of Obesity by Year
+
+nd <- tibble(
+  Year = factor(c(2013, 2014, 2015, 2016),
+                levels = levels(obesity$Year))
+)
+
+p <- predict(model_year,
+             newdata = nd,
+             type = "link",
+             se.fit = TRUE) |>
+  as.data.frame() |>
+  mutate(
+    fit_prob = plogis(fit),
+    ll = plogis(fit - 1.96 * se.fit),
+    ul = plogis(fit + 1.96 * se.fit)
+  ) |>
+  bind_cols(nd)
+
+ggplot(p, aes(x = Year, y = fit_prob)) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = ll, ymax = ul), width = 0.1) +
+  labs(
+    x = "Year",
+    y = "Prob. of obesity",
+    title = "Predicted Probability of Obesity by Year"
+  ) +
+  ylim(0, 1)
+```
+
+### Full model with all variables
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-fullmodel
+#| tbl-cap: Log odds of the logistic regression model with all variables
+full_model <- glm(Obese ~ Age + Sex + Education + Veg + Fruit,
+                   data = obesity,
+                   family = binomial)
+
+tab_model(full_model,transform = NULL,
+          dv.labels = "Full model")
+
+```
+
+From the insignificant p-value for fruit, we can remove that variable from our model.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false 
+p <- exp(coef(full_model))
+```
+
+We will now compute our new model below.
+
+### Reduced model (without fruit)
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-modelcomp
+#| tbl-cap: Model comparison
+reduced_model<- glm(Obese ~ Age + Sex + Education + Veg,
+                                 data = obesity,
+                                 family = binomial)
+
+tab_model(reduced_model,full_model,transform = NULL,
+          dv.labels = c("Reduced model","Full model"))
+
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-aic
+#| tbl-cap: Model AIC comparison
+
+
+compare_performance(reduced_model,full_model,metrics = "AIC") %>% 
+  kable()
+```
+
+We can see that a model with \`Fruit\` has a higher AIC hence is not a preferred variable.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-anova
+#| tbl-cap: Model likelihood ratio test
+anova(reduced_model, full_model, test = "Chisq") %>% 
+  kable()
+
+```
+
+A likelihood ratio test comparing the reduced and full models yielded a p-value of 0.999. Since p value\>\>0.05, this indicates that there is no evidence that the additional predictor `Fruit` in the full model improve model fit. Therefore, the reduced model is preferred.
+
+### Model check
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-check
+#| fig-cap: Final model diagnostic plots
+library(performance)
+check_model(reduced_model, check = c("pp_check","binned_residuals","outliers","qq"))
+```
+
+Diagnostic plots were used to assess how well the model fits the data and check whether our assumptions are met.
+
+The posterior predictive check (top-left) shows that most residuals lie within the expected error bounds, with no strong systematic pattern. This suggests there is no systematic discrepancies between real and simulated data.
+
+The binned residual plot (top-right) shows that most of the sesiduals lie within the expected error bounds, with about 95% of the residuals to fall inside the error bounds. 
+
+The influential observations plot (bottom-left) indicates that all points on this plot lie within Cook's distance. Therefore, there is no evidence of influential observations that affect the model.
+
+The uniformity of residuals (bottom-right) closely follows the theoretical line, suggesting that the model assumptions sre appropriate and to which the observed values do not deviate from the model expectations using simulated residuals. 
+
+Finally we will assess the performance of the model using the Receiver Operating Characteristic (ROC) Curve:
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+pred_results <- obesity %>%
+  mutate(.pred_1 = predict(reduced_model, type = "response"))
+
+roc_curve(
+  pred_results,
+  truth = Obese,
+  .pred_1,
+  event_level = "second"
+) %>%
+  autoplot() +
+  labs(
+    title = "ROC Curve",
+    x = "1 - Specificity",
+    y = "Sensitivity"
+  )
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| label: fig-roc
+#| fig-cap: ROC Curve
+
+yardstick::roc_auc(
+  pred_results,
+  truth = Obese,
+  .pred_1,
+  event_level = "second"
+)$.estimate
+```
+
+The ROC curve indicated if the model was able to distinuish between obese and non-obese individuals. Since the curve appears to be close to the diagonal line, this indicates the model only performs slighly better than guessing at random.The AUC of 0.59 indicates a moderate-poor fit.
 
 # Discussion {#sec-discussion}
 
 # Conclusion {#sec-conclusion}
 
+In conclusion, there is no evidence to suggest that obesity prevalence has any significant chance over the years we considered in this report. Moreover, there was a differences in obesity by fruit, however, no difference was observed by age, gender, socio-economic status or vegetable consumption.
+
 # References {#sec-references}
 
 # Appendix {#sec-appendix}
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+plot_sex <- ggplot(sexprop %>% dplyr::filter(Obese == "Yes"),
+                   aes(x = Sex, y = Prevalence)) +
+  geom_col() +
+  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+  labs(
+    title = "By Sex",
+    x = "Sex",
+    y = "Obesity prevalence (%)"
+  ) +
+  theme_minimal()
+
+plot_edu <- ggplot(eduprop %>% dplyr::filter(Obese == "Yes"),
+                   aes(x = Education, y = Prevalence)) +
+  geom_col() +
+  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+  labs(
+    title = "By Education",
+    x = "Education",
+    y = "Obesity prevalence (%)"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
+plot_veg <- ggplot(vegprop %>% dplyr::filter(Obese == "Yes"),
+                   aes(x = Vegetable_intake, y = Prevalence)) +
+  geom_col() +
+  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+  labs(
+    title = "By Vegetable Intake",
+    x = "Vegetable intake",
+    y = "Obesity prevalence (%)"
+  ) +
+  theme_minimal()
+
+plot_fruit <- ggplot(frprop %>% dplyr::filter(Obese == "Yes"),
+                     aes(x = Fruit_intake, y = Prevalence)) +
+  geom_col() +
+  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+  labs(
+    title = "By Fruit Intake",
+    x = "Fruit intake",
+    y = "Obesity prevalence (%)"
+  ) +
+  theme_minimal()
+
+((plot_sex + plot_edu) / (plot_veg + plot_fruit))
+
+```
 
 ## R Studio Language {#sub-sec-language}
