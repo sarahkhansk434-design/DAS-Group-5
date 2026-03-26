@@ -20,3 +20,9 @@ Obestiy Prediction using visualisation, testing, and applied modelling.
 ## Tools Used
 - R Studio
 - Quarto
+
+## Contributors
+- Sarah Khan
+- Cameron Fraser
+- Chloe Au Yeung
+- Xinyan Tian	
