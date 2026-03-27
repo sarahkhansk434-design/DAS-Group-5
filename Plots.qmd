@@ -1,0 +1,599 @@
+---
+title: "final plot"
+format: html
+editor: visual
+echo: false
+message: false
+warning: false
+---
+
+## Introduction
+
+## Explanatory Analysis
+
+### Year vs prevalence
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+library(ggplot2)
+library(dplyr)
+library(kableExtra)
+library(sjPlot)
+library(performance)
+library(DHARMa)
+library(patchwork)
+obesity<-read.csv("DAProject5.csv")
+obesity$Year<-as.factor((obesity$Year))
+obesity$Obese<-as.factor((obesity$Obese))
+obesity$Education<-as.factor((obesity$Education))
+obesity$Veg<-as.factor((obesity$Veg))
+obesity$Fruit<-as.factor((obesity$Fruit))
+obesity$Sex<-as.factor(obesity$Sex)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| eval: false
+
+glimpse(obesity)
+
+```
+
+```{r}
+#| echo: false
+#| label: tbl-year
+#| tbl-cap: Prevalence of obesity over 2013-2016
+
+yearprop<-prop.table(table(obesity$Year,obesity$Obese),1)
+yearprop<-as.data.frame(yearprop)
+colnames(yearprop)<-c("Year","Obese","Prevalence")
+yearprop100<-prop.table(table(obesity$Year,obesity$Obese),1)*100
+yearprop100<-as.data.frame(yearprop100)
+colnames(yearprop100)<-c("Year","Obese","Prevalence(%)")
+yearprev<-yearprop100 %>%
+  dplyr::filter(Obese=="Yes")
+yearprev<-yearprev[,-2]
+kable(yearprev,
+      digit=3)
+
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false 
+#| label: fig-year
+#| fig-cap: Prevalence of obesity across 2013-2016
+
+ggplot(yearprop, aes(x = Year, y = Prevalence, fill = Obese)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent,
+                      limits = c(0,1)) +
+  labs(x="Year", y="Prevalence",
+       title="Obesity Prevalence by Year")  
+
+```
+
+### Sex vs prevalence
+
+```{r}
+#| echo: false
+#| label: tbl-sex
+#| tbl-cap: Prevalence of obesity by sex
+sexprop<-prop.table(table(obesity$Sex, obesity$Obese),1)
+sexprop<-as.data.frame(sexprop)
+colnames(sexprop)<-c("Sex","Obese","Prevalence")
+sexprop100<-prop.table(table(obesity$Sex, obesity$Obese),1)*100
+sexprop100<-as.data.frame(sexprop100)
+colnames(sexprop100)<-c("Sex","Obese","Prevalence(%)")
+
+sexprev<-sexprop100 %>%
+  dplyr::filter(Obese=="Yes")
+sexprev<-sexprev[,-2]
+kable(sexprev,
+      digit=3)
+```
+
+```{r}
+#| echo: false
+#| label: fig-sex
+#| fig-cap: Obesity prevalence by sex
+ggplot(sexprop, aes(x = Sex, y = Prevalence, fill = Obese)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0,1)) +
+  labs(
+    title = "Obesity Prevalence by Sex",
+    x = "Sex",
+    y = "Prevalence"
+  )
+```
+
+### Age vs prevalence
+
+```{r}
+#| echo: false
+#| label: fig-ageboxplot
+#| fig-cap: Age Distribution by Obesity Status
+ggplot(obesity, aes(x = Obese, y = Age,fill=Obese)) +
+  geom_boxplot() +
+  labs(title="Age Distribution by Obesity Status")
+
+```
+
+### Education vs prevalence
+
+```{r}
+#| echo: false
+#| label: tbl-edu
+#| tbl-cap: Prevalence of obesity by education level
+eduprop<-prop.table(table(obesity$Education, obesity$Obese),1)
+eduprop<-as.data.frame(eduprop)
+colnames(eduprop)<-c("Education","Obese","Prevalence")
+eduprop100<-prop.table(table(obesity$Education, obesity$Obese),1)*100
+eduprop100<-as.data.frame(eduprop100)
+colnames(eduprop100)<-c("Education","Obese","Prevalence(%)")
+
+eduprev<-eduprop100 %>%
+  dplyr::filter(Obese=="Yes")
+eduprev<-eduprev[,-2]
+kable(eduprev,
+      digit=3)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-edu
+#| fig-cap: Obesity Prevalence by Education Level
+
+ggplot(eduprop, aes(x = Education, y = Prevalence, fill = Obese)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0,1)) +
+  labs(
+    title = "Obesity Prevalence by Education Level",
+    x = "Education Level",
+    y = "Prevalence"
+  )+
+  theme(axis.text.x = element_text(angle = 30, hjust=1))
+```
+
+### Vegetable intake
+
+```{r}
+#| echo: false
+#| label: tbl-veg
+#| tbl-cap: Prevalence of obesity by Vegetable intake
+vegprop<-prop.table(table(obesity$Veg, obesity$Obese),1)
+vegprop<-as.data.frame(vegprop)
+colnames(vegprop)<-c("Vegetable_intake","Obese","Prevalence")
+vegprop100<-prop.table(table(obesity$Veg, obesity$Obese),1)*100
+vegprop100<-as.data.frame(vegprop100)
+colnames(vegprop100)<-c("Vegetable_intake","Obese","Prevalence(%)")
+
+vegprev<-vegprop100 %>%
+  dplyr::filter(Obese=="Yes")
+vegprev<-vegprev[,-2]
+kable(vegprev,
+      digit=3)
+```
+
+```{r}
+#| echo: false
+#| label: fig-veg
+#| fig-cap: Obesity Prevalence by Vegatable intake
+ggplot(vegprop, aes(x = Vegetable_intake , y = Prevalence, fill = Obese)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0,1)) +
+  labs(
+    title = "Obesity Prevalence by Vegetable Intake",
+    x = "Vegetable Intake",
+    y = "Prevalence"
+  )
+
+```
+
+### Fruits vs prevalence
+
+```{r}
+#| echo: false
+#| label: tbl-fruits
+#| tbl-cap: Prevalence of obesity by Fruit intake
+frprop<-prop.table(table(obesity$Fruit, obesity$Obese),1)
+frprop<-as.data.frame(frprop)
+colnames(frprop)<-c("Fruit_intake","Obese","Prevalence")
+frprop100<-prop.table(table(obesity$Fruit, obesity$Obese),1)*100
+frprop100<-as.data.frame(frprop100)
+colnames(frprop100)<-c("Fruit_intake","Obese","Prevalence(%)")
+
+frprev<-frprop100 %>%
+  dplyr::filter(Obese=="Yes")
+frprev<-frprev[,-2]
+kable(frprev,
+      digit=3)
+```
+
+```{r}
+#| echo: false
+ggplot(frprop, aes(x = Fruit_intake, y = Prevalence, fill = Obese)) +
+  geom_col(position = "dodge")  +
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0,1))+
+  labs(
+    title = "Obesity Prevalence by Fruit intake",
+    x = "Fruits Intake",
+    y = "Prevalence"
+  )
+```
+
+## Formal Analysis
+
+### Year vs prevalence
+
+$$logit(p_i)=\beta_0+\beta_1(Year)$$ {#eq-year}
+
+where $p_i$ is the probability that an individual is obese.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false 
+#| label: tbl-yearmodel
+#| tbl-cap: Coefficient of the logistic regression model
+model_year <- glm(Obese ~ Year,
+                  data = obesity,
+                  family = binomial)
+
+summary(model_year)
+
+tab_model(model_year,transform=NULL)
+```
+
+Each coefficient compares that year with 2013(reference level)
+
+Since p \> 0.05, there is no significant difference in obesity prevalence between years.
+
+```{r}
+#| echo: false
+exp(coef(model_year))
+```
+
+odds are very similar across years
+
+### Sex vs prevalence
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-sexmodel
+#| tbl-cap: Coefficient of the logistic regression model 
+model_sex <- glm(Obese ~ Sex,
+                 data = obesity,
+                 family = binomial)
+
+summary(model_sex)
+
+tab_model(model_sex,transform=NULL)
+```
+
+Since p=0.00246\<0.05, obesity prevalence differ by sex
+
+```{r}
+#| echo: false
+exp(coef(model_sex))
+```
+
+Odds ratio \< 1 → males have lower odds of obesity compared with females.
+
+### Age vs prevalence
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-agemodel
+#| tbl-cap: Coefficient of the logistic regression model
+model_age <- glm(Obese~ Age,
+                 data = obesity,
+                 family = binomial)
+
+summary(model_age)
+
+tab_model(model_age,transform=NULL) 
+```
+
+Since p-value\<0.05-\> age is a signicant factor in obesity prevalence
+
+```{r}
+#| echo: false
+exp(coef(model_age))
+```
+
+Each 1-year increase in age increases odds of obesity by about 1.02%.
+
+```{r}
+#| echo: false
+#| label: fig-age
+#| fig-cap: Predicted relationshio between age and obesity prevalence
+obesity$Obese_num <- ifelse(obesity$Obese == "Yes", 1, 0)
+ggplot(obesity, aes(x = Age, y = Obese_num)) +
+  geom_jitter(height = 0.05, alpha = 0.2) +
+  stat_smooth(method = "glm", method.args = list(family = "binomial")) +
+  labs(
+    y = "Probability of Obesity",
+    title = "Relationship Between Age and Obesity Prevalence" 
+  )
+```
+
+### Education vs prevalence
+
+```{r}
+#| echo: false
+#| label: tbl-edumodel
+#| tbl-cap: Coefficient of the logistic regression model
+#| warning: false
+#| message: false
+
+ model_edu <- glm(Obese ~ Education,
+                 data = obesity,
+                 family = binomial)
+
+summary(model_edu)
+
+tab_model(model_edu,transform=NULL)
+ 
+
+```
+
+gives model formula
+
+look at pvalues
+
+```{r}
+#| echo: false
+exp(coef(model_edu))
+#compare odds of being obese to referenc group 
+```
+
+### Vegetable intake vs prevalence
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: tbl-vegmodel
+#| tbl-cap: Coefficient of the logistic regression model
+
+model_veg <- glm(Obese ~ Veg,
+                 data = obesity,
+                 family = binomial)
+
+summary(model_veg)
+
+tab_model(model_veg,transform=NULL)
+```
+
+pvalue=0.00298\<0.05, significant
+
+interpretation of estimates/odd ratios?
+
+```{r}
+#| echo: false
+exp(coef(model_veg))
+
+##odd ratio
+```
+
+odd ratios
+
+Individuals meeting recommended vegetable intake have lower odds of obesity compared with those who do not.
+
+### Fruit intake vs prevalence
+
+```{r}
+#| echo: false
+#| label: tbl-fruitmodel
+#| tbl-cap: Log odds of the logistic regression model
+#| message: false
+#| warning: false
+
+model_fruit <- glm(Obese ~ Fruit,
+                   data = obesity,
+                   family = binomial)
+
+summary(model_fruit)
+
+tab_model(model_fruit,transform=NULL)
+
+```
+
+pavlue=0.839-\>factor is insignicant
+
+```{r}
+#| echo: false
+exp(coef(model_fruit))
+```
+
+### Full model with all variables
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+full_model <- glm(Obese ~ Age + Sex + Education + Veg + Fruit + Year,
+                   data = obesity,
+                   family = binomial)
+
+```
+
+look at p-value -\> can remove year and fruit from model
+
+### Reduced model (without year and fruit)
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+reduced_model<- glm(Obese ~ Age + Sex + Education + Veg,
+                                 data = obesity,
+                                 family = binomial)
+
+```
+
+### Interaction model
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-modelcomplogodd
+#| tbl-cap: Model comparison
+model_interaction <- glm(
+  Obese ~ Age + Sex + Education + Veg + Fruit +
+    Age:Sex +
+    Age:Education +
+    Veg:Fruit,
+  data = obesity,
+  family = binomial
+  )
+tab_model(full_model,reduced_model,model_interaction, transform = NULL,
+          dv.labels = c("Full model","Reduced model","Interaction Model"),
+          show.aic = T)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-aic
+#| tbl-cap: Model AIC comparison
+
+
+compare_performance(full_model,reduced_model,model_interaction,metrics = "AIC") %>% 
+  kable()
+
+
+```
+
+The interaction model has the lowest aic-\> best fit model
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-anova
+#| tbl-cap: Model likelihood ratio test
+
+anova(full_model,reduced_model, model_interaction, test = "Chisq") %>% 
+  kable()
+```
+
+since p value for interaction model \<0.05, it significantly improves model fit , therefore the interaction model is preferred. (same conclusion as aic test)
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false 
+
+library(sjPlot)
+
+p1<-plot_model(
+  model_interaction,
+  type = "pred",
+  terms = c("Age"),
+  axis.title = c("Age", "Predicted probability of obesity"),
+  title = " "
+)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false 
+
+library(sjPlot)
+
+p2<-plot_model(
+  model_interaction,
+  type = "pred",
+  terms = c("Sex"),
+  axis.title = c("Gender", "Predicted probability of obesity"),
+  title = " "
+)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false 
+
+library(sjPlot)
+
+p3<-plot_model(
+  model_interaction,
+  type = "pred",
+  terms = c("Education"),
+  axis.title = c("socio-economic status", "Predicted probability of obesity"),
+  title = " "
+)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false 
+
+p4<-plot_model(
+  model_interaction,
+  type = "pred",
+  terms = c("Veg", "Fruit"),
+  axis.title = c("Lifestyle", "Predicted probability of obesity"),
+  title = " "
+)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false 
+library(sjPlot)
+
+p5<-plot_model(
+  model_interaction,
+  type = "pred",
+  terms = c("Age", "Sex"),
+  axis.title = c("Age and sex", "Predicted probability of obesity"),
+  title = " "
+)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+(p1 + p2 + p3 + p4 + p5) +
+plot_layout(ncol = 3) &
+theme(plot.margin = margin(3,3,3,3))
+```
+
+### Model check
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-check
+#| fig-cap: Final model diagnostic plots
+library(performance)
+check_model(model_interaction, check = c("pp_check","binned_residuals","outliers","qq"))
+```

@@ -1,0 +1,810 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  10pt,
+]{article}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Group 05 Analysis: Prevalence of Obesity in Scotland (2013--2016)},
+  pdfauthor={Group 5: Chloe Au Yeung, Xinyan Tian, Cameron Fraser, and Sarah Khan},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{Group 05 Analysis: Prevalence of Obesity in Scotland
+(2013--2016)}
+\author{Group 5: Chloe Au Yeung, Xinyan Tian, Cameron Fraser, and Sarah
+Khan}
+\date{}
+\begin{document}
+\maketitle
+
+
+\section{\texorpdfstring{{Introduction}}{Introduction}}\label{sec-intro}
+
+\subsection{\texorpdfstring{{Data
+Overview}}{Data Overview}}\label{sec-data-overview}
+
+In this report, we will begin using logistic regression to model
+outcomes of interest that take one of two categorical values. Then, we
+will use model diagnostics to assess if this model is the most reliable
+and fits the data best. Then we will look at the \texttt{DAProject.csv}
+dataset which contains the socio-economic and lifestyle factors from the
+2013 - 2016 Scottish Health Surveys.
+
+In this report, we will use the data stored in \texttt{DAProject5.csv}
+which has 7 variables and 14,018 individuals. \texttt{DAPprojects.csv}
+contains the following columns:
+
+\begin{itemize}
+\item
+  \texttt{Age} - Age of individual,
+\item
+  \texttt{Sex} - Sex of individual (Male/ Female),
+\item
+  \texttt{Education} - Highest educational qualification of individual,
+\item
+  \texttt{Veg} - Consume recommended daily vegetable intake (Yes / No),
+\item
+  \texttt{Fruit} - Consume recommended daily fruit intake (Yes / No),
+\item
+  \texttt{Year} - Year of the Scottish Health Survey,
+\item
+  \texttt{Obese} - Indicator of individuals obesity classification (Yes
+  / No).
+\end{itemize}
+
+Since this dataset contains a binary categorical variable \texttt{Obese}
+- classified as \texttt{Yes}/\texttt{No} - logistic regression may be
+considered as an appropriate modelling approach. The main questions of
+interest are:
+
+\begin{itemize}
+\item
+  Has the prevalence of obesity in Scotland changed over the given years
+  of the Scottish Health Survey?
+\item
+  Are there any differences in obesity by age, gender, socio-economic
+  status, or lifestyle factors?
+\end{itemize}
+
+\section{\texorpdfstring{{Explanatory Data
+Analysis}}{Explanatory Data Analysis}}\label{sec-explanatory-data-analysis}
+
+\subsection{\texorpdfstring{{Logistic
+Regression}}{Logistic Regression}}\label{sub-sec-log-reg}
+
+Logistic regression is used when the outcome of interest takes one of
+two categorical values (e.g.~\texttt{Yes}/\texttt{No}). In this case,
+the response variable takes the value 1 (defined as success, with
+probability \(p_i\)) or 0 (defined as failure, with probability
+\(1 - p_i\)). And the response is given by \(Y_i\) with Bernoulli
+distribution. The corresponding model uses the logit link function:
+\begin{equation}\protect\phantomsection\label{eq-log-odds}{
+g(p_i) = 
+\log\left(\frac{p_i}{1 - p_i}\right)
+= \log\left(\frac{\mathbb{P}(Y_i = 1 \mid \underline{x}_i)}{\mathbb{P}(Y_i = 0 \mid \underline{x}_i)}\right)
+= \underline{x}_i^\top \underline{\beta}
+}\end{equation}
+
+We can refer to Equation~\ref{eq-log-odds} as the log-odds, since
+\(\frac{p_i}{1 - p_i}\) represents the odds. Taking the inverse of the
+logit link function gives the following:
+\begin{equation}\protect\phantomsection\label{eq-odds-1}{
+\mathbb{P}(Y_i = 1 \mid \underline{x}_i)
+= \frac{\exp(\underline{x}_i^\top \underline{\beta})}{1 + \exp(\underline{x}_i^\top \underline{\beta})}
+}\end{equation}
+\begin{equation}\protect\phantomsection\label{eq-odds-0}{
+\mathbb{P}(Y_i = 0 \mid \underline{x}_i)
+= \frac{1}{1 + \exp(\underline{x}_i^\top \underline{\beta})}.
+}\end{equation}
+
+\subsection{\texorpdfstring{{Visualisations}}{Visualisations}}\label{sub-sec-visualisations}
+
+To get an initial impression of the data set, we will look at the binary
+categorical variable \texttt{Obese} as our response variable.
+
+\paragraph{Year vs prevalence}\label{year-vs-prevalence}
+
+{
+
+\begin{longtable}[]{@{}lr@{}}
+
+\caption{\label{tbl-1}Prevalence of obesity over 2013-2016}
+
+\tabularnewline
+
+\toprule\noalign{}
+Year & Prevalence(\%) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+2013 & 30.301 \\
+2014 & 30.182 \\
+2015 & 30.645 \\
+2016 & 30.536 \\
+
+\end{longtable}
+
+}
+
+We can look at a bar plot of the proportion of \texttt{Obese} by
+\texttt{Year} to observe if there are changes in prevalence across the
+years.
+
+\begin{figure}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{Group_05_Analysis_files/figure-pdf/fig-year-1.pdf}}
+
+}
+
+\caption{\label{fig-year}Prevalence of Obesity across 2013--2016}
+
+\end{figure}%
+
+We can see in Figure~\ref{fig-year} that there was an approximate
+consistency in proportion of individuals in the \texttt{Yes} obesity
+group. From Table~\ref{tbl-1}, the proportion of individuals in the
+\texttt{Yes} obesity group appears, on average, at 30.5\%.
+
+\paragraph{Sex vs prevalence}\label{sex-vs-prevalence}
+
+{
+
+\begin{longtable}[]{@{}lr@{}}
+
+\caption{\label{tbl-sex}Prevalence of obesity by sex}
+
+\tabularnewline
+
+\toprule\noalign{}
+Sex & Prevalence(\%) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Female & 31.463 \\
+Male & 29.094 \\
+
+\end{longtable}
+
+}
+
+In Table~\ref{tbl-sex}, we can see that females in the \texttt{Yes}
+obesity group tends to be slightly higher than that of males.
+
+\paragraph{Age vs prevalence}\label{age-vs-prevalence}
+
+\begin{figure}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{Group_05_Analysis_files/figure-pdf/fig-age-1.pdf}}
+
+}
+
+\caption{\label{fig-age}Age Distribution by Obesity Status}
+
+\end{figure}%
+
+Figure~\ref{fig-age} shows the distribution of age by obesity status.
+Individuals classified as obese tends to have slightly higher median
+ages compared to non-obese individuals.
+
+\paragraph{Education vs prevalence}\label{education-vs-prevalence}
+
+{
+
+\begin{longtable}[]{@{}lr@{}}
+
+\caption{\label{tbl-edu}Prevalence of obesity by education level}
+
+\tabularnewline
+
+\toprule\noalign{}
+Education & Prevalence(\%) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Degree or higher & 24.712 \\
+Higher grade or equiv & 28.166 \\
+HNC/D or equiv & 31.313 \\
+No qualifications & 38.170 \\
+Other school level & 35.518 \\
+Standard grade or equiv & 32.899 \\
+
+\end{longtable}
+
+}
+
+From Table~\ref{tbl-edu}, proportion of individuals in the \texttt{Yes}
+obesity group variably increases across education levels. For example,
+individuals in the \texttt{No\ Qualifications} group have a higher
+prevalence of obesity (38.2\%), than those in the
+\texttt{Degree\ of\ higher} group (24.7\%).
+
+\paragraph{Vegetable Intake}\label{vegetable-intake}
+
+{
+
+\begin{longtable}[]{@{}lr@{}}
+
+\caption{\label{tbl-veg}Prevalence of obesity by Vegetable intake}
+
+\tabularnewline
+
+\toprule\noalign{}
+Vegetable\_intake & Prevalence(\%) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+No & 32.560 \\
+Yes & 29.792 \\
+
+\end{longtable}
+
+}
+
+\paragraph{Fruits Intake}\label{fruits-intake}
+
+{
+
+\begin{longtable}[]{@{}lr@{}}
+
+\caption{\label{tbl-fruits}Prevalence of obesity by Fruit intake}
+
+\tabularnewline
+
+\toprule\noalign{}
+Fruit\_intake & Prevalence(\%) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+No & 30.294 \\
+Yes & 30.466 \\
+
+\end{longtable}
+
+}
+
+Additionally, Table~\ref{tbl-veg} and Table~\ref{tbl-fruits} displays
+similar results for nutritional consumption \texttt{Yes}/\texttt{No}
+with the \texttt{Fruit} group intake being approximately the same and
+the \texttt{No} \texttt{Vegetable} intake group having a larger
+proportion (32.6\% vs 29.8\%).
+
+\section{\texorpdfstring{{Formal Data
+Analysis}}{Formal Data Analysis}}\label{sec-formal-data-analysis}
+
+\subsection{\texorpdfstring{{Model
+Specification}}{Model Specification}}\label{sub-sec-model-specification}
+
+We will now fit a logistic model to investigate the relationship between
+obesity and explanatory variables. Let \(Y_i = 1\) if individual
+\emph{i} is obese and \(Y_i = 0\) otherwise. We will assume that:
+\[Y_i \sim \text{Bernoulli}(p_i)\]where,
+\(p_i = \mathbb{P}(Y_i = 1 \mid \underline{x}_i)\) and
+\(Y_i = Obese_i\). The model is given by:
+\begin{equation}\protect\phantomsection\label{eq-year-model}{logit(p_i)=\alpha_0 + \beta_1 \,\mathbb{I}_{(\text{Year}_i = 2014)}
++ \beta_2 \,\mathbb{I}_{(\text{Year}_i = 2015)}
++ \beta_3 \,\mathbb{I}_{(\text{Year}_i = 2016)}}\end{equation}
+
+where: 2013 is the reference year. The intercept \(\alpha_0\) represents
+the log-odds of an individual being obese in the reference year 2013,
+and the coefficients \(\beta_1\), \(\beta_2\), \(\beta_3\) represent the
+change in log-odds in each year compared to 2013.
+
+To fit a logistic regression model, we will conduct variable selection
+using a backwards elimination approach, supported by model selection
+critera such as Bayesian Information Criterion (BIC) and likelihood
+ratio test. The performance of the model we select will be assessed
+using the Receiver Operating Characteristic (ROC) Curve.
+
+\subsection{\texorpdfstring{{Results}}{Results}}\label{sub-sec-results}
+
+\paragraph{Year vs prevalence}\label{year-vs-prevalence-1}
+
+We will fit a logistic regression model using the logit link function,
+with \texttt{Obese} as the response and \texttt{Year} as the explanatory
+variable:
+
+{
+
+\begin{longtable}[]{@{}cccc@{}}
+
+\caption{\label{tbl-yearmodel}Coefficient of the logistic regression
+model}
+
+\tabularnewline
+
+\toprule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+~ & \multicolumn{3}{c@{}}{%
+Obese} \\
+Predictors & Log-Odds & CI & p \\
+(Intercept) & -0.83 & -0.90~--~-0.76 & \textbf{\textless0.001} \\
+Year {[}2014{]} & -0.01 & -0.11~--~0.09 & 0.913 \\
+Year {[}2015{]} & 0.02 & -0.08~--~0.12 & 0.749 \\
+Year {[}2016{]} & 0.01 & -0.09~--~0.11 & 0.832 \\
+Observations & \multicolumn{3}{l@{}}{%
+14017} \\
+R\textsuperscript{2} Tjur & \multicolumn{3}{l@{}}{%
+0.000} \\
+
+\end{longtable}
+
+}
+
+The coefficients for all years appear close to zero. Additionally, the
+confidence intervals across all years include zero and p \textgreater{}
+0.05. This provides no evidence that year is a statistically significant
+predictor of obesity, which suggests that obesity prevalence has not
+changed over time. We can visualise the probabilities using the
+plot\_model() function as follows:
+
+\begin{figure}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{Group_05_Analysis_files/figure-pdf/fig-log-odds-1.pdf}}
+
+}
+
+\caption{\label{fig-log-odds}Coefficient of the Logistic Regression
+Model}
+
+\end{figure}%
+
+Figure~\ref{fig-log-odds} shows the estimated log-odds coefficients for
+each year relative to the reference category (2013) are all close to
+zero, and their confidence intervals include zero. This indicates that
+there is minimal difference in log-odds of obesity across years. Adding
+onto this, Table~\ref{tbl-yearmodel} shows large p-values, which further
+provides evidence that year is not a statistically significant predictor
+of obesity. Comparing coefficients of the regression model with that of
+the reference level appears to be approximately the same. We can now
+obtain probability predictions for each year using the
+\texttt{predict()} function as follows:
+
+\begin{figure}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{Group_05_Analysis_files/figure-pdf/fig-prob-obesity-1.pdf}}
+
+}
+
+\caption{\label{fig-prob-obesity}Prob. of Obesity by Year}
+
+\end{figure}%
+
+From Figure~\ref{fig-prob-obesity}, we can predict the probability of
+obesity for each year. The probabilities appear to be constant at
+approximately 30\%, with the confidence intervals overlapping. This,
+again, indicates that there is no significant change in obesity
+prevalence over time.
+
+\paragraph{Comparison: Full Model vs.~Reduced Model (with fruit intake
+removed)}\label{comparison-full-model-vs.-reduced-model-with-fruit-intake-removed}
+
+We now investigate whether obesity differs by age, gender,
+socio-economic status, and lifestyle factors. By this, we will fit a
+full model including variables \texttt{Age}, \texttt{Sex},
+\texttt{Education}, \texttt{Veg}, and \texttt{Fruit}. Our full model
+indicates that fruit intake is not a statistically significant predictor
+for obesity due to the large p-value (0.942) so it is removed. As seen
+in the reduced model, and to compare models we also fit a reduced model,
+with \texttt{Fruit} removed:
+
+{
+
+\begin{longtable}[]{@{}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}@{}}
+
+\caption{\label{tbl-modelcomp}Model comparison}
+
+\tabularnewline
+
+\toprule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+~ &
+\multicolumn{3}{>{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.4286} + 4\tabcolsep}}{%
+Reduced Model} &
+\multicolumn{3}{>{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.4286} + 4\tabcolsep}@{}}{%
+Full Model} \\
+Predictors & Log-Odds & CI & p & Log-Odds & CI & p \\
+(Intercept) & -1.52 & -1.67~--~-1.37 & \textbf{\textless0.001} & -1.52 &
+-1.68~--~-1.37 & \textbf{\textless0.001} \\
+Age & 0.01 & 0.01~--~0.01 & \textbf{\textless0.001} & 0.01 &
+0.01~--~0.01 & \textbf{\textless0.001} \\
+Sex {[}Male{]} & -0.12 & -0.20~--~-0.05 & \textbf{0.001} & -0.12 &
+-0.20~--~-0.05 & \textbf{0.001} \\
+\begin{minipage}[t]{\linewidth}\raggedright
+Education {[}Higher grade\\
+or equiv{]}\strut
+\end{minipage} & 0.23 & 0.11~--~0.34 & \textbf{\textless0.001} & 0.23 &
+0.11~--~0.34 & \textbf{\textless0.001} \\
+\begin{minipage}[t]{\linewidth}\raggedright
+Education {[}HNC/D or\\
+equiv{]}\strut
+\end{minipage} & 0.36 & 0.23~--~0.48 & \textbf{\textless0.001} & 0.36 &
+0.23~--~0.48 & \textbf{\textless0.001} \\
+\begin{minipage}[t]{\linewidth}\raggedright
+Education {[}No\\
+qualifications{]}\strut
+\end{minipage} & 0.46 & 0.35~--~0.58 & \textbf{\textless0.001} & 0.46 &
+0.35~--~0.58 & \textbf{\textless0.001} \\
+\begin{minipage}[t]{\linewidth}\raggedright
+Education {[}Other school\\
+level{]}\strut
+\end{minipage} & 0.31 & 0.14~--~0.48 & \textbf{\textless0.001} & 0.31 &
+0.14~--~0.48 & \textbf{\textless0.001} \\
+\begin{minipage}[t]{\linewidth}\raggedright
+Education {[}Standard grade\\
+or equiv{]}\strut
+\end{minipage} & 0.42 & 0.31~--~0.53 & \textbf{\textless0.001} & 0.42 &
+0.31~--~0.53 & \textbf{\textless0.001} \\
+Veg {[}Yes{]} & -0.10 & -0.19~--~-0.02 & \textbf{0.021} & -0.10 &
+-0.19~--~-0.01 & \textbf{0.023} \\
+Fruit {[}Yes{]} & & & & 0.00 & -0.08~--~0.09 & 0.942 \\
+Observations &
+\multicolumn{3}{>{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.4286} + 4\tabcolsep}}{%
+14017} &
+\multicolumn{3}{>{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.4286} + 4\tabcolsep}@{}}{%
+14017} \\
+R\textsuperscript{2} Tjur &
+\multicolumn{3}{>{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.4286} + 4\tabcolsep}}{%
+0.018} &
+\multicolumn{3}{>{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.4286} + 4\tabcolsep}@{}}{%
+0.018} \\
+
+\end{longtable}
+
+}
+
+In summary, due to the insignificant p-value, we can remove fruit intake
+from the full model. The reduced model predictors are now all
+statistically significant. Next, we will compare the BIC of the reduced
+model again the full model to supplement this conclusion:
+
+{
+
+\begin{longtable}[]{@{}llrr@{}}
+
+\caption{\label{tbl-bic}Model BIC comparison}
+
+\tabularnewline
+
+\toprule\noalign{}
+Name & Model & BIC & BIC\_wt \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+reduced\_model & glm & 17050.38 & 0.9916024 \\
+full\_model & glm & 17059.92 & 0.0083976 \\
+
+\end{longtable}
+
+}
+
+The full model has a higher BIC in comparison to the reduced model,
+indicating a poorer balance between model fit and complexity. As a
+result, the reduced model is preferred. In addition to this, we can
+conduct a likelihood ratio test:
+
+{
+
+\begin{longtable}[]{@{}rrrrr@{}}
+
+\caption{\label{tbl-anova}Model likelihood ratio test}
+
+\tabularnewline
+
+\toprule\noalign{}
+Resid. Df & Resid. Dev & Df & Deviance & Pr(\textgreater Chi) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+14008 & 16964.45 & NA & NA & NA \\
+14007 & 16964.44 & 1 & 0.0052782 & 0.9420837 \\
+
+\end{longtable}
+
+}
+
+A likelihood ratio test comparing the reduced and full models yields a
+p-value of 0.94. Since this is greater than 0.05, there is no evidence
+that the additional predictor, fruit intake, improve model fit.
+
+\paragraph{Model check}\label{model-check}
+
+We will now investigate diagnostic plots to assess how well the model
+fits the data. This way we can assess whether our assumptions are met:
+
+\begin{table}
+
+\caption{\label{tbl-pp-bin}}
+
+\centering{
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Posterior predictive check and binned residuals for the reduced model}]{Group_05_Analysis_files/figure-pdf/tbl-pp-bin-1.pdf}}
+\caption{Posterior predictive check and binned residuals for the reduced
+model}
+\end{figure}
+
+}
+
+\end{table}%
+
+\begin{table}
+
+\caption{\label{tbl-outlier-qq}}
+
+\centering{
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Influential observations and quantile residuals for the reduced model}]{Group_05_Analysis_files/figure-pdf/tbl-outlier-qq-1.pdf}}
+\caption{Influential observations and quantile residuals for the reduced
+model}
+\end{figure}
+
+}
+
+\end{table}%
+
+The posterior predictive check (top-left) shows that most residuals lie
+within the expected error bounds, with no strong systematic pattern.
+This suggests there is no systematic discrepancies between real and
+simulated data. The binned residual plot (top-right) shows that most of
+the residuals lie within the expected error bounds, with about 95\% of
+the residuals to fall inside the error bounds. The influential
+observations plot (bottom-left) indicates that all points on this plot
+lie within Cook's distance. Therefore, there is no evidence of
+influential observations that affect the model. The uniformity of
+residuals (bottom-right) closely follows the theoretical line,
+suggesting that the model assumptions are appropriate and to which the
+observed values do not deviate from the model expectations using
+simulated residuals.
+
+Finally, we will assess the performance of the model using the Receiver
+Operating Characteristic (ROC) Curve:
+
+\begin{figure}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{Group_05_Analysis_files/figure-pdf/fig-roc-1.pdf}}
+
+}
+
+\caption{\label{fig-roc}ROC Curve}
+
+\end{figure}%
+
+The ROC curve in Figure~\ref{fig-roc} indicates if the model was able to
+distinguish between obese and non-obese individuals. Since the curve
+appears to be close to the diagonal line, this indicates the model only
+performs slightly better than guessing at random. The area under the
+curve (AUC) is approximately 0.60, which suggests a moderate-poor
+predictive performance. This indicates that, although several predictors
+are statistically significant, the effect they have are not strong.
+
+\section{\texorpdfstring{{Discussion}}{Discussion}}\label{sec-discussion}
+
+There is no significant evidence to suggest that obesity rates in the
+Scottish population change from 2013-2016. Table~\ref{tbl-yearmodel}
+shows the proportions as relatively similar across years, and this is
+further evidenced by the logistic regression model used to predict
+obesity, as Figure~\ref{fig-log-odds} shows confidence intervals that
+include 0, meaning there is very little difference in the log-odds
+across the years. There are differences in obesity by age, gender,
+socio-economic status, or lifestyle factors. This is evidenced by
+Table~\ref{tbl-sex}, Figure~\ref{fig-age}, Table~\ref{tbl-edu},
+Table~\ref{tbl-veg}, as all of these show a difference in obesity
+prevalence within their own category. Furthermore, by being significant
+predictors of obesity in the logistic regression model - \texttt{Age},
+\texttt{Sex}, \texttt{Education}, and \texttt{Veg} must have significant
+differences in obesity prevalence within their categories, otherwise
+they would not be significant predictors, like \texttt{Fruit}.
+
+\section{\texorpdfstring{{Conclusion}}{Conclusion}}\label{sec-conclusion}
+
+In conclusion, there is no suggested evidence that obesity prevalence
+has any significant chance over the years we considered in this report.
+Moreover, there was evidence of a difference in obesity by age, gender,
+socio-economic status, or vegetable consumption, however, no evidence of
+a difference was observed by fruit.
+
+\section{\texorpdfstring{{Reference}}{Reference}}\label{sec-reference}
+
+Scottish Government (2013-2016). \emph{Scottish Health Survey.}
+
+
+
+
+\end{document}

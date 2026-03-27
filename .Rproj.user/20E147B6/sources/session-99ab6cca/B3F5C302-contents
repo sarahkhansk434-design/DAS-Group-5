@@ -1,0 +1,50 @@
+<style>
+@media print {
+  body {
+    font-size: 11px;
+        margin: 0.5cm;
+  }
+
+  p {
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 11px;
+    line-height: 1.1;
+  }
+
+  main,
+  .content,
+  .page-columns,
+  .page-layout-article,
+  #quarto-content {
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+
+  
+  figcaption {
+    font-size: 10px;
+    margin-top: 4px;
+    margin-bottom: 6px;
+  }
+
+  .quarto-figure {
+    font-size: 10px;
+  }
+  
+  h4 {
+  font-size: 12px;
+}
+
+  @page {
+    margin: 0.5cm;
+  }
+</style>
