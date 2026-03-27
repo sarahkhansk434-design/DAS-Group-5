@@ -6,6 +6,7 @@ format:
     toc: true
     toc-depth: 2
     toc-location: left
+    embed-resources: true
     title-block-style: none
     author-block-style: none
     toc-expand: true
